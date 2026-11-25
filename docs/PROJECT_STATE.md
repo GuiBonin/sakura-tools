@@ -70,7 +70,10 @@ React 19.3, React Router 8.5, Vite 8.3, TypeScript 6.0, Vitest 5.1, ESLint 9.39,
 
 ## Git
 
-Repositório inicializado em 25/11/2026 (`git init -b main`), sem remoto. Antes do commit inicial,
+Repositório público em https://github.com/GuiBonin/sakura-tools (branch `main`), primeiro push em
+25/11/2026. O primeiro CI falhou no `npm ci`: o lockfile gerado com npm 11 não tinha
+`@emnapi/core` e `@emnapi/runtime`, opcionais do Linux, que o npm 10 do CI exige. Lockfile
+regenerado com npm 10. Antes do commit inicial,
 o planejamento comercial foi retirado do repositório: `docs/PRODUCT_SPEC.md` virou a versão
 pública do núcleo, e a especificação completa ficou fora do Git público.
 

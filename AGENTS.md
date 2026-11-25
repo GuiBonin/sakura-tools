@@ -26,6 +26,10 @@ npm run test:e2e     # Playwright contra o build de produção (desktop e 375 px
                      # local usa o Google Chrome instalado; no CI, o Chromium do Playwright
 ```
 
+O CI roda Node 22 com npm 10. Depois de mudar dependências, confira se o lockfile passa nele:
+`npx -y npm@10 ci --dry-run --ignore-scripts`. Lockfile gerado com npm 11 pode faltar dependência
+opcional do Linux e quebrar o `npm ci` do CI.
+
 ## Regras do projeto
 
 - Idioma: português do Brasil em código, comentários, docs e commits. Inglês é o segundo idioma
