@@ -55,6 +55,22 @@ test.describe('build de produção', () => {
     expect(csp).toContain("connect-src 'self'");
     expect(w.problems).toEqual([]);
   });
+
+  test('favicons declarados existem e são imagens', async ({ page, request }) => {
+    await page.goto('/');
+    const hrefs = await page
+      .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
+      .evaluateAll((els) => els.map((el) => el.getAttribute('href')));
+    expect(hrefs).toEqual(['/favicon.ico', '/favicon-192.png', '/apple-touch-icon.png']);
+    for (const href of hrefs) {
+      const res = await request.get(href!);
+      expect(res.status(), href!).toBe(200);
+      const body = await res.body();
+      // ICO começa com 00 00 01 00; PNG com 89 50 4E 47.
+      const magic = body.subarray(0, 4).toString('hex');
+      expect(magic, href!).toBe(href!.endsWith('.ico') ? '00000100' : '89504e47');
+    }
+  });
 });
 
 test.describe('todas as ferramentas', () => {
