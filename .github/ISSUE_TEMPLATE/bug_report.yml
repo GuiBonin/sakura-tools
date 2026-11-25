@@ -1,0 +1,26 @@
+name: Bug
+description: Algo não funciona como deveria
+labels: [bug]
+body:
+  - type: input
+    id: tool
+    attributes:
+      label: Ferramenta ou página
+      placeholder: /tools/json-formatter
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      description: Não cole dados reais (documentos fiscais, CPF, tokens). Use exemplos fictícios.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado e resultado obtido
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador e sistema

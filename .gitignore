@@ -1,0 +1,20 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+*.local
+CLAUDE.md
+# Documentos de sessão e de planejamento: ficam só na máquina, nunca no GitHub.
+AGENTS.md
+docs/PROJECT_STATE.md
+docs/NEXT_STEPS.md
+docs/ROADMAP.md
+docs/PRODUCT_SPEC.md
+docs/DECISIONS.md
+docs/SAKURA_UI_PROPOSALS.md
