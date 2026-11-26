@@ -787,6 +787,8 @@ kbd {
 
 .st-segmented {
   display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   padding: 3px;
   gap: 2px;
   border: 1px solid var(--sk-border);

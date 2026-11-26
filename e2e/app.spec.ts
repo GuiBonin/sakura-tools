@@ -222,6 +222,27 @@ test.describe('rotas e ferramentas fiscais', () => {
     );
   });
 
+  // A fonte do sistema muda de largura entre Windows e Linux. Com uma fonte larga
+  // forçada, o seletor de quatro opções precisa quebrar linha em vez de vazar.
+  test('seletores de opção não vazam da tela com fonte larga', async ({ page }) => {
+    for (const path of ['/fiscal/rejection-codes', '/fiscal/nfe-compare']) {
+      await page.goto(path);
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      await page.addStyleTag({
+        content: '* { font-family: "DejaVu Sans", Verdana, sans-serif !important; }',
+      });
+      if (path.endsWith('nfe-compare')) {
+        await page.getByRole('button', { name: 'Exemplo' }).click();
+        await expect(page.getByRole('region', { name: 'Diferenças' })).toContainText(
+          '3 diferença(s)',
+        );
+      } else {
+        await expect(page.getByRole('radiogroup', { name: 'Tipo' })).toBeVisible();
+      }
+      expect(await hasHorizontalScroll(page), path).toBe(false);
+    }
+  });
+
   for (const theme of ['dark', 'light'] as const) {
     test(`comparador e rejeições com resultado no tema ${theme}: sem rolagem e sem violações sérias`, async ({
       page,
