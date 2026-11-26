@@ -2,12 +2,13 @@ import { Badge, Button, Input } from '@guibonin/sakura-ui';
 import {
   ACCESS_KEY_LAYOUT,
   generateAccessKey,
-  TP_EMIS,
   validateAccessKey,
   type AccessKeyField,
   type AccessKeyIssue,
   type AccessKeyParts,
 } from '@sakura-tools/tools/accessKey';
+import type { Locale } from '@sakura-tools/core';
+import { describeCode } from '@sakura-tools/fiscal/codes';
 import { useMemo, useState } from 'react';
 import { ToolHelp } from '../components/ToolShell';
 import { Notice, ResultRow, Toolbar } from '../components/ui';
@@ -38,14 +39,6 @@ function fieldName(field: AccessKeyField, tr: Tr): string {
   }
 }
 
-function tpEmisName(code: string, tr: Tr): string {
-  const name = TP_EMIS[code];
-  if (!name) return '';
-  if (code === '1') return tr('Emissão normal', 'Normal issue');
-  if (code === '9') return tr('Contingência off-line da NFC-e', 'NFC-e offline contingency');
-  return tr(`Contingência ${name}`, `${name} contingency`);
-}
-
 function fieldValue(field: AccessKeyField, p: AccessKeyParts): string {
   switch (field) {
     case 'cUF':
@@ -69,7 +62,7 @@ function fieldValue(field: AccessKeyField, p: AccessKeyParts): string {
   }
 }
 
-function fieldMeaning(field: AccessKeyField, p: AccessKeyParts, tr: Tr): string {
+function fieldMeaning(field: AccessKeyField, p: AccessKeyParts, locale: Locale): string {
   switch (field) {
     case 'cUF':
       return p.uf ?? '';
@@ -85,7 +78,7 @@ function fieldMeaning(field: AccessKeyField, p: AccessKeyParts, tr: Tr): string 
     case 'nNF':
       return String(Number(p.nNF));
     case 'tpEmis':
-      return tpEmisName(p.tpEmis, tr);
+      return describeCode('tpEmis', p.tpEmis, locale) ?? '';
     case 'cNF':
     case 'cDV':
       return '';
@@ -93,7 +86,7 @@ function fieldMeaning(field: AccessKeyField, p: AccessKeyParts, tr: Tr): string 
 }
 
 export default function AccessKeyValidator() {
-  const { t, tr, em } = useI18n();
+  const { t, tr, em, locale } = useI18n();
   const [value, setValue] = useState('');
   const result = useMemo(() => (value.trim() ? validateAccessKey(value) : null), [value]);
 
@@ -204,7 +197,7 @@ export default function AccessKeyValidator() {
                     </td>
                     <td className="st-mono">{fieldValue(field, result.parts!)}</td>
                     <td>
-                      {fieldMeaning(field, result.parts!, tr)}
+                      {fieldMeaning(field, result.parts!, locale)}
                       {field === 'cDV' && result.expectedDv !== result.parts!.cDV && (
                         <>
                           {tr('Esperado', 'Expected')} <code>{result.expectedDv}</code>

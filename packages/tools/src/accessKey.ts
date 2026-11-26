@@ -13,8 +13,9 @@
  *   resultado for 10 ou 11. Implantação em produção: 06/07/2026.
  * - NT 2019.001 v1.00 (abril de 2019), regra B03-10 (Rejeição 897, modelos
  *   55 e 65): lista de cNF proibidos e cNF diferente de nNF.
- * - MOC, campo B22 (tpEmis): 1 normal, 2 FS-IA, 3 SCAN (desativado), 4 EPEC,
- *   5 FS-DA, 6 SVC-AN, 7 SVC-RS, 9 contingência off-line da NFC-e.
+ * - leiauteNFe_v4.00.xsd (PL_010h), campo tpEmis: 1 normal, 2 contingência FS,
+ *   3 Regime Especial NFF (NT 2021.002), 4 DPEC, 5 FSDA, 6 SVC-AN, 7 SVC-RS,
+ *   9 contingência off-line da NFC-e e da NF-e com DANFE Simplificado Tipo 2.
  * - Código da UF: tabela do IBGE usada no campo cUF.
  *
  * Para chaves só com números, o cálculo ASCII − 48 dá o mesmo resultado do
@@ -116,13 +117,13 @@ export const UF_CODES: Readonly<Record<string, string>> = {
   '53': 'DF',
 };
 
-/** tpEmis (campo B22 do MOC). O 3 (SCAN) existe no layout, mas está desativado. */
+/** tpEmis conforme o leiauteNFe_v4.00.xsd (PL_010h). Descrições completas em `@sakura-tools/fiscal/codes`. */
 export const TP_EMIS: Readonly<Record<string, string>> = {
   '1': 'normal',
-  '2': 'FS-IA',
-  '3': 'SCAN',
-  '4': 'EPEC',
-  '5': 'FS-DA',
+  '2': 'FS',
+  '3': 'NFF',
+  '4': 'DPEC',
+  '5': 'FSDA',
   '6': 'SVC-AN',
   '7': 'SVC-RS',
   '9': 'offline',
@@ -286,10 +287,6 @@ export function validateAccessKey(input: string, opts: { now?: Date } = {}): Acc
   // Forma de emissão
   if (!(f.tpEmis in TP_EMIS)) {
     err('tpEmis', msg('accessKey.badTpEmis', { value: f.tpEmis }));
-  } else if (f.tpEmis === '3') {
-    warn('tpEmis', msg('accessKey.scanDisabled'));
-  } else if (f.tpEmis === '9' && f.mod === '55') {
-    warn('tpEmis', msg('accessKey.offlineOnlyNfce'));
   }
 
   // Código numérico (regra B03-10)

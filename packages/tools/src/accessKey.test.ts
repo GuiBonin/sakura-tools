@@ -137,11 +137,14 @@ describe('validateAccessKey: chaves válidas', () => {
     expect(r.parts?.uf).toBe('RS');
   });
 
-  it.each(['1', '2', '4', '5', '6', '7'])('tpEmis %s numa NF-e é aceito sem aviso', (tp) => {
-    const r = validateAccessKey(patch(NUMERIC, 35, tp), { now: NOW });
-    expect(r.valid).toBe(true);
-    expect(r.warnings).toEqual([]);
-  });
+  it.each(['1', '2', '3', '4', '5', '6', '7', '9'])(
+    'tpEmis %s numa NF-e é aceito sem aviso',
+    (tp) => {
+      const r = validateAccessKey(patch(NUMERIC, 35, tp), { now: NOW });
+      expect(r.valid).toBe(true);
+      expect(r.warnings).toEqual([]);
+    },
+  );
 
   it('tpEmis 9 numa NFC-e é aceito sem aviso', () => {
     const key = patch(patch(NUMERIC, 21, '65'), 35, '9');
@@ -277,16 +280,16 @@ describe('validateAccessKey: campos', () => {
     ]);
   });
 
-  it('tpEmis 3 (SCAN) é aviso', () => {
-    const r = validateAccessKey(patch(NUMERIC, 35, '3'), { now: NOW });
+  // Pelo XSD atual (PL_010h), 3 é Regime Especial NFF e 9 vale para NFC-e e
+  // para NF-e com DANFE Simplificado Tipo 2. Nenhum dos dois gera aviso.
+  it.each([
+    ['3', '55'],
+    ['9', '55'],
+    ['3', '65'],
+  ])('tpEmis %s no modelo %s é aceito sem aviso', (tp, mod) => {
+    const r = validateAccessKey(patch(patch(NUMERIC, 21, mod), 35, tp), { now: NOW });
     expect(r.valid).toBe(true);
-    expect(codes(r, 'warnings')).toEqual(['accessKey.scanDisabled']);
-  });
-
-  it('tpEmis 9 numa NF-e é aviso', () => {
-    const r = validateAccessKey(patch(NUMERIC, 35, '9'), { now: NOW });
-    expect(r.valid).toBe(true);
-    expect(codes(r, 'warnings')).toEqual(['accessKey.offlineOnlyNfce']);
+    expect(r.warnings).toEqual([]);
   });
 
   it('todos os cNF da lista da regra B03-10 são recusados', () => {

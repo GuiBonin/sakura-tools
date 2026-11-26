@@ -302,14 +302,6 @@ const MESSAGES = {
     'pt-BR': 'A forma de emissão {value} não existe. Os valores são 1 a 7 e 9.',
     en: 'Issue type {value} does not exist. Valid values are 1 to 7 and 9.',
   },
-  'accessKey.scanDisabled': {
-    'pt-BR': 'A forma de emissão 3 (SCAN) está desativada.',
-    en: 'Issue type 3 (SCAN) has been deactivated.',
-  },
-  'accessKey.offlineOnlyNfce': {
-    'pt-BR': 'A forma de emissão 9 (contingência off-line) é usada na NFC-e, não na NF-e.',
-    en: 'Issue type 9 (offline contingency) is used for NFC-e, not for NF-e.',
-  },
   'accessKey.weakCnf': {
     'pt-BR':
       'O código numérico {value} é proibido por ser uma sequência fraca (Rejeição 897, NT 2019.001).',

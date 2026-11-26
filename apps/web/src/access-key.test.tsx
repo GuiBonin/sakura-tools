@@ -78,10 +78,20 @@ describe('Validador de chave de acesso', () => {
   });
 
   it('aviso aparece separado e não invalida a chave', async () => {
-    // Mesma chave com tpEmis 3 (SCAN) e DV recalculado.
-    await typeKey('35261111222333000181550010000001233482719340');
+    // CNPJ alfanumérico com AAMM 2606, antes da produção (julho de 2026).
+    await typeKey('35260612ABC34501DE35550010000001231482719340');
     expect(screen.getByRole('status')).toHaveTextContent('Chave de acesso coerente');
-    expect(screen.getByText(/SCAN\) está desativada/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/só é aceito nos documentos fiscais a partir de julho de 2026/),
+    ).toBeInTheDocument();
+  });
+
+  it('tpEmis 3 aparece como Regime Especial NFF, sem aviso', async () => {
+    await typeKey('35261111222333000181550010000001233482719340');
+    expect(
+      within(row(/Forma de emissão/)).getByText('Regime Especial NFF (NT 2021.002)'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Atenção')).not.toBeInTheDocument();
   });
 
   it('em inglês, erros e campos saem em inglês', async () => {
