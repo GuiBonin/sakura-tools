@@ -363,6 +363,26 @@ const MESSAGES = {
     'pt-BR': 'O XML não traz protocolo de autorização (protNFe).',
     en: 'The XML has no authorization protocol (protNFe).',
   },
+  'nfe.noInfEvento': {
+    'pt-BR': 'O evento não tem o grupo infEvento.',
+    en: 'The event has no infEvento group.',
+  },
+  'nfe.noEventReturn': {
+    'pt-BR': 'O XML não traz o retorno do evento (retEvento).',
+    en: 'The XML has no event response (retEvento).',
+  },
+  'nfe.eventKeyInvalid': {
+    'pt-BR': 'A chave da NF-e no evento ({key}) não é válida.',
+    en: 'The NF-e key in the event ({key}) is not valid.',
+  },
+  'nfe.eventIdMismatch': {
+    'pt-BR': 'O Id do evento ({id}) não é "ID" + tpEvento + chave + nSeqEvento ({expected}).',
+    en: 'The event Id ({id}) is not "ID" + tpEvento + key + nSeqEvento ({expected}).',
+  },
+  'nfe.eventReturnMismatch': {
+    'pt-BR': 'O campo {field} do retorno ({ret}) é diferente do evento ({event}).',
+    en: 'Field {field} in the response ({ret}) differs from the event ({event}).',
+  },
   'nfe.workerFailed': {
     'pt-BR': 'Não deu para ler o XML. Tente de novo ou use um arquivo menor.',
     en: 'Could not read the XML. Try again or use a smaller file.',

@@ -393,6 +393,25 @@ kbd {
   padding-left: var(--sk-space-3);
   border-left: 2px solid var(--sk-border);
 }
+.st-compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--sk-space-4);
+}
+.st-xml-matches {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  max-height: 20rem;
+  overflow: auto;
+  font-size: var(--sk-text-sm);
+}
+.st-xml-matches li {
+  overflow-wrap: anywhere;
+}
+.st-xml-matches li + li {
+  margin-top: var(--sk-space-1);
+}
 .st-group__title {
   margin: 0 0 var(--sk-space-2);
   font-size: var(--sk-text-sm);

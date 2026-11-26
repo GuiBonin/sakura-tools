@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import { toolPath } from '../lib/toolPath';
 import { useI18n } from '../i18n/I18nProvider';
 import { useFavorites } from '../lib/storage';
 import { registry } from '../registry';
@@ -54,7 +55,7 @@ function Sidebar() {
             <Star size={14} aria-hidden="true" /> {t('nav.favorites')}
           </h2>
           {favTools.map((tool) => (
-            <NavLink key={tool.id} to={`/tools/${tool.slug}`} className="st-navlink">
+            <NavLink key={tool.id} to={toolPath(tool)} className="st-navlink">
               <Icon name={tool.icon} size={16} /> {lt(tool.name)}
             </NavLink>
           ))}
@@ -71,7 +72,7 @@ function Sidebar() {
                 <Icon name={cat.icon} size={14} /> {lt(cat.name)}
               </h2>
               {tools.map((tool) => (
-                <NavLink key={tool.id} to={`/tools/${tool.slug}`} className="st-navlink">
+                <NavLink key={tool.id} to={toolPath(tool)} className="st-navlink">
                   <Icon name={tool.icon} size={16} /> {lt(tool.name)}
                 </NavLink>
               ))}

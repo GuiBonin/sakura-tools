@@ -126,3 +126,32 @@ export function textOf(el: XmlElement | undefined, path: string): string | undef
   const t = pathOf(el, path)?.text.trim();
   return t === undefined || t === '' ? undefined : t;
 }
+
+export type XmlJson = string | { [key: string]: XmlJson | XmlJson[] };
+
+/**
+ * Converte um elemento em JSON. Elemento sem atributos e sem filhos vira o
+ * próprio texto. Nos demais, atributos ficam em `@nome`, texto em `#text` e
+ * filhos repetidos viram lista, na ordem do documento.
+ */
+export function elementToJson(el: XmlElement): XmlJson {
+  const text = el.text.trim();
+  const attrs = Object.entries(el.attrs);
+  if (attrs.length === 0 && el.children.length === 0) return text;
+  const out: { [key: string]: XmlJson | XmlJson[] } = {};
+  for (const [k, v] of attrs) out[`@${k}`] = v;
+  if (text) out['#text'] = text;
+  for (const c of el.children) {
+    const value = elementToJson(c);
+    const prev = out[c.name];
+    if (prev === undefined) out[c.name] = value;
+    else if (Array.isArray(prev)) prev.push(value);
+    else out[c.name] = [prev, value];
+  }
+  return out;
+}
+
+/** Documento inteiro como `{ raiz: ... }`. */
+export function xmlTreeToJson(root: XmlElement): XmlJson {
+  return { [root.name]: elementToJson(root) };
+}

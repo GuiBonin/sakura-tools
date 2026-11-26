@@ -17,17 +17,17 @@ Tudo processado no seu navegador. Open source. Powered by [Sakura UI](https://gi
 
 ## Ferramentas disponíveis
 
-| Categoria   | Ferramentas                                                                                                            |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Programação | Formatador de JSON (formata, valida, minifica, ordena chaves), Formatador de XML (formata, minifica, valida estrutura) |
-| Conversores | Base64 (UTF-8 e URL-safe), URL Encode/Decode                                                                           |
-| Geradores   | UUID v4 e v7, senhas, QR Code (texto, link, Wi-Fi; SVG e PNG)                                                          |
-| Texto       | Testador de Regex (isolado em Web Worker), comparador de textos                                                        |
-| Segurança   | Hash SHA-1/256/384/512 e HMAC de texto e arquivo, decodificador de JWT                                                 |
-| Frontend    | Conversor HEX/RGB/HSL/CMYK com contraste WCAG                                                                          |
-| Datas       | Unix Timestamp com fusos horários                                                                                      |
-| Brasil      | Validador e gerador de teste de CPF e CNPJ (inclusive CNPJ alfanumérico)                                               |
-| Fiscal      | Visualizador de NF-e e NFC-e (itens, impostos com IBS e CBS, totais, protocolo), validador de chave de acesso          |
+| Categoria   | Ferramentas                                                                                                                                                                                                 |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Programação | Formatador de JSON (formata, valida, minifica, ordena chaves), Formatador de XML (formata, minifica, valida estrutura)                                                                                      |
+| Conversores | Base64 (UTF-8 e URL-safe), URL Encode/Decode                                                                                                                                                                |
+| Geradores   | UUID v4 e v7, senhas, QR Code (texto, link, Wi-Fi; SVG e PNG)                                                                                                                                               |
+| Texto       | Testador de Regex (isolado em Web Worker), comparador de textos                                                                                                                                             |
+| Segurança   | Hash SHA-1/256/384/512 e HMAC de texto e arquivo, decodificador de JWT                                                                                                                                      |
+| Frontend    | Conversor HEX/RGB/HSL/CMYK com contraste WCAG                                                                                                                                                               |
+| Datas       | Unix Timestamp com fusos horários                                                                                                                                                                           |
+| Brasil      | Validador e gerador de teste de CPF e CNPJ (inclusive CNPJ alfanumérico)                                                                                                                                    |
+| Fiscal      | Visualizador de NF-e e NFC-e (itens, impostos com IBS e CBS, totais, protocolo, eventos, busca, JSON e CSV), comparador de XML, consulta de rejeições (tabela oficial do MOC), validador de chave de acesso |
 
 ## Privacidade
 

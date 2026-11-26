@@ -6,6 +6,10 @@
  * protocolo no processamento síncrono) e `protNFe` (protocolo avulso).
  * Estrutura conforme o `leiauteNFe_v4.00.xsd` (PL_010h).
  *
+ * Eventos: `procEventoNFe` (evento com retorno), `evento` e `retEvento`,
+ * conforme o `leiauteEvento_v1.00.xsd` (PL_010h). O Id do evento é
+ * "ID" + tpEvento + chave da NF-e + nSeqEvento.
+ *
  * O que esta leitura NÃO faz: conferir a assinatura digital, validar contra
  * o XSD, consultar a SEFAZ ou recalcular tributos. Um protocolo presente no
  * XML não é tratado como prova de autorização.
@@ -22,7 +26,16 @@ import {
 } from '@sakura-tools/tools/xmlTree';
 
 export const NFE_NAMESPACE = 'http://www.portalfiscal.inf.br/nfe';
-export const SUPPORTED_ROOTS = ['NFe', 'nfeProc', 'enviNFe', 'retEnviNFe', 'protNFe'] as const;
+export const SUPPORTED_ROOTS = [
+  'NFe',
+  'nfeProc',
+  'enviNFe',
+  'retEnviNFe',
+  'protNFe',
+  'procEventoNFe',
+  'evento',
+  'retEvento',
+] as const;
 export type FiscalRoot = (typeof SUPPORTED_ROOTS)[number];
 
 export type IssueLevel = 'error' | 'warning' | 'info';
@@ -100,7 +113,39 @@ export interface FiscalDocument {
   protocols: ProtocolView[];
   batch?: { idLote?: string; indSinc?: string };
   response?: { tpAmb?: string; cStat?: string; xMotivo?: string; dhRecbto?: string; nRec?: string };
+  events: EventView[];
   /** Avisos do documento como um todo. */
+  issues: FiscalIssue[];
+  /** Árvore do documento inteiro, para a exportação em JSON. */
+  tree: XmlElement;
+}
+
+export interface EventReturnView {
+  cStat?: string;
+  xMotivo?: string;
+  nProt?: string;
+  dhRegEvento?: string;
+  tpEvento?: string;
+  nSeqEvento?: string;
+  chNFe?: string;
+  node: XmlElement;
+}
+
+export interface EventView {
+  id?: string;
+  tpEvento?: string;
+  /** descEvento do detEvento, como está no XML. */
+  descEvento?: string;
+  nSeqEvento?: string;
+  chNFe?: string;
+  dhEvento?: string;
+  tpAmb?: string;
+  cOrgao?: string;
+  author?: string;
+  /** Grupo infEvento do evento, quando houver. */
+  node?: XmlElement;
+  detEvento?: XmlElement;
+  ret: EventReturnView | null;
   issues: FiscalIssue[];
 }
 
@@ -242,6 +287,67 @@ function readNfe(nfe: XmlElement, protNFe: XmlElement | undefined): NfeView | nu
   return { id, version, key, summary, items, infNFe, protocol, issues };
 }
 
+function readEventReturn(retEvento: XmlElement | undefined): EventReturnView | null {
+  const inf = childOf(retEvento, 'infEvento');
+  if (!inf) return null;
+  return {
+    cStat: textOf(inf, 'cStat'),
+    xMotivo: textOf(inf, 'xMotivo'),
+    nProt: textOf(inf, 'nProt'),
+    dhRegEvento: textOf(inf, 'dhRegEvento'),
+    tpEvento: textOf(inf, 'tpEvento'),
+    nSeqEvento: textOf(inf, 'nSeqEvento'),
+    chNFe: textOf(inf, 'chNFe'),
+    node: inf,
+  };
+}
+
+function readEvent(evento: XmlElement | undefined, retEvento: XmlElement | undefined): EventView {
+  const inf = childOf(evento, 'infEvento');
+  const ret = readEventReturn(retEvento);
+  const issues: FiscalIssue[] = [];
+  const view: EventView = {
+    id: inf?.attrs.Id,
+    tpEvento: textOf(inf, 'tpEvento'),
+    descEvento: textOf(inf, 'detEvento/descEvento'),
+    nSeqEvento: textOf(inf, 'nSeqEvento'),
+    chNFe: textOf(inf, 'chNFe'),
+    dhEvento: textOf(inf, 'dhEvento'),
+    tpAmb: textOf(inf, 'tpAmb'),
+    cOrgao: textOf(inf, 'cOrgao'),
+    author: textOf(inf, 'CNPJ') ?? textOf(inf, 'CPF'),
+    node: inf,
+    detEvento: childOf(inf, 'detEvento'),
+    ret,
+    issues,
+  };
+  if (evento && !inf) issues.push(issue('error', msg('nfe.noInfEvento')));
+  if (inf) {
+    if (view.chNFe && !validateAccessKey(view.chNFe).valid) {
+      issues.push(issue('error', msg('nfe.eventKeyInvalid', { key: view.chNFe })));
+    }
+    if (view.tpEvento && view.chNFe && view.nSeqEvento) {
+      const expected = `ID${view.tpEvento}${view.chNFe}${view.nSeqEvento.padStart(2, '0')}`;
+      if (view.id !== expected) {
+        issues.push(issue('error', msg('nfe.eventIdMismatch', { id: view.id ?? '', expected })));
+      }
+    }
+    if (view.tpAmb === '2') issues.push(issue('warning', msg('nfe.homologation')));
+  }
+  if (inf && ret) {
+    const cmp = (field: string, a: string | undefined, b: string | undefined) => {
+      if (a !== undefined && b !== undefined && a !== b) {
+        issues.push(issue('error', msg('nfe.eventReturnMismatch', { field, ret: b, event: a })));
+      }
+    };
+    cmp('chNFe', view.chNFe, ret.chNFe);
+    cmp('tpEvento', view.tpEvento, ret.tpEvento);
+    cmp('nSeqEvento', view.nSeqEvento, ret.nSeqEvento);
+  }
+  if (inf && !ret) issues.push(issue('info', msg('nfe.noEventReturn')));
+  return view;
+}
+
 /** Lê o XML e devolve as NF-e encontradas, já conferidas. Nunca lança. */
 export function parseFiscalXml(input: string): FiscalParseResult {
   let root: XmlElement;
@@ -272,7 +378,9 @@ export function parseFiscalXml(input: string): FiscalParseResult {
     version: root.attrs.versao,
     nfes: [],
     protocols: [],
+    events: [],
     issues,
+    tree: root,
   };
   const addNfe = (nfe: XmlElement, prot?: XmlElement) => {
     const view = readNfe(nfe, prot);
@@ -314,6 +422,18 @@ export function parseFiscalXml(input: string): FiscalParseResult {
       const view = readProtocol(root);
       if (view) doc.protocols.push(view);
       else issues.push(issue('error', msg('nfe.noInfProt')));
+      break;
+    }
+    case 'procEventoNFe':
+      doc.events.push(readEvent(childOf(root, 'evento'), childOf(root, 'retEvento')));
+      break;
+    case 'evento':
+      doc.events.push(readEvent(root, undefined));
+      break;
+    case 'retEvento': {
+      const ret = readEventReturn(root);
+      if (ret) doc.events.push({ ret, issues: [] });
+      else issues.push(issue('error', msg('nfe.noInfEvento')));
       break;
     }
   }

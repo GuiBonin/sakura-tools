@@ -31,7 +31,9 @@ não existem. Ver "Fronteira público/privado".
 3. `apps/web/src/tools/<Nome>.tsx` é a interface, registrada em `apps/web/src/registry.ts` com
    `lazy(() => import(...))`. Cada ferramenta vira um chunk separado.
 4. `/tools/:slug` resolve pelo `ToolRegistry`, aplica meta tags, registra o ID nos recentes e
-   renderiza dentro de um error boundary.
+   renderiza dentro de um error boundary. Ferramentas da categoria `fiscal` ficam em
+   `/fiscal/:slug` (`apps/web/src/lib/toolPath.ts`); o endereço do grupo errado redireciona, e
+   `/fiscal/nfce-viewer` abre o visualizador de NF-e, que lê os dois modelos.
 
 Um teste (`app.test.tsx`) garante que todo item disponível no catálogo tem componente e que todo
 componente tem item no catálogo.

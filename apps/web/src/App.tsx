@@ -24,6 +24,7 @@ export function AppRoutes() {
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="tools/:slug" element={<ToolPage />} />
+          <Route path="fiscal/:slug" element={<ToolPage base="fiscal" />} />
           <Route path="categories/:id" element={<CategoryPage />} />
           <Route path="settings" element={<Settings />} />
           <Route path="pricing" element={<Pricing />} />

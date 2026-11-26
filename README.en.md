@@ -21,7 +21,7 @@ JSON formatter, XML formatter (with structural validation), Base64, URL encode/d
 password generator, QR code generator, regex tester (isolated in a Web Worker), text diff, hash
 generator (SHA and HMAC, text and files), JWT decoder, color converter (HEX, RGB, HSL, CMYK) with WCAG contrast, Unix
 timestamp converter, and Brazilian CPF/CNPJ validators and test-data generators (including the new
-alphanumeric CNPJ), an NF-e/NFC-e access key validator that checks each field, and an NF-e/NFC-e XML viewer (items, taxes including IBS and CBS, totals and protocol).
+alphanumeric CNPJ), an NF-e/NFC-e access key validator that checks each field, an NF-e/NFC-e XML viewer (items, taxes including IBS and CBS, totals, protocol, events, search, JSON and CSV export), an NF-e XML compare tool, and a rejection code lookup based on the official MOC table.
 
 ## Privacy
 

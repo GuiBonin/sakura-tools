@@ -139,3 +139,38 @@ export function buildSampleNfe(opts: SampleOptions = {}): { xml: string; key: st
     : `<?xml version="1.0" encoding="UTF-8"?>\n${nfe}`;
   return { xml, key };
 }
+
+/**
+ * Evento fictício de cancelamento (tpEvento 110111) da nota de exemplo, em
+ * homologação. Com `withReturn`, vem dentro de `procEventoNFe` com retorno.
+ */
+export function buildSampleCancelEvent(opts: {
+  key: string;
+  date?: Date;
+  withReturn?: boolean;
+}): string {
+  const dh = isoWithOffset(opts.date ?? new Date());
+  const emitter = opts.key.slice(6, 20);
+  const id = `ID110111${opts.key}01`;
+  const evento = `<evento xmlns="${NFE_NAMESPACE}" versao="1.00">
+    <infEvento Id="${id}">
+      <cOrgao>35</cOrgao><tpAmb>2</tpAmb><CNPJ>${emitter}</CNPJ><chNFe>${opts.key}</chNFe>
+      <dhEvento>${dh}</dhEvento><tpEvento>110111</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento>
+      <detEvento versao="1.00"><descEvento>Cancelamento</descEvento><nProt>135000000000001</nProt>
+        <xJust>Cancelamento de nota ficticia de teste</xJust></detEvento>
+    </infEvento>
+  </evento>`;
+  if (!opts.withReturn) return `<?xml version="1.0" encoding="UTF-8"?>\n${evento}`;
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<procEventoNFe xmlns="${NFE_NAMESPACE}" versao="1.00">
+  ${evento}
+  <retEvento versao="1.00">
+    <infEvento>
+      <tpAmb>2</tpAmb><verAplic>EXEMPLO-1.0</verAplic><cOrgao>35</cOrgao><cStat>135</cStat>
+      <xMotivo>Evento registrado e vinculado a NF-e</xMotivo><chNFe>${opts.key}</chNFe>
+      <tpEvento>110111</tpEvento><xEvento>Cancelamento registrado</xEvento><nSeqEvento>1</nSeqEvento>
+      <dhRegEvento>${dh}</dhRegEvento><nProt>135000000000002</nProt>
+    </infEvento>
+  </retEvento>
+</procEventoNFe>`;
+}

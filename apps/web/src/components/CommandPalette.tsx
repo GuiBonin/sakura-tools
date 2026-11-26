@@ -1,7 +1,9 @@
 import { Modal } from '@guibonin/sakura-ui';
 import { Search } from 'lucide-react';
 import { useId, useMemo, useRef, useState } from 'react';
+import type { ToolDefinition } from '@sakura-tools/core';
 import { useNavigate } from 'react-router';
+import { toolPath } from '../lib/toolPath';
 import { useI18n } from '../i18n/I18nProvider';
 import { registry } from '../registry';
 import { Icon } from './Icon';
@@ -19,9 +21,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   // O Layout remonta este componente (via `key`) a cada abertura,
   // então a busca sempre começa vazia sem precisar de efeito.
 
-  const go = (slug: string) => {
+  const go = (tool: { slug: string; category: ToolDefinition['category'] }) => {
     onClose();
-    void navigate(`/tools/${slug}`);
+    void navigate(toolPath(tool));
   };
 
   return (
@@ -57,7 +59,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
               setActive((a) => Math.max(0, a - 1));
             } else if (e.key === 'Enter' && results[active]) {
               e.preventDefault();
-              go(results[active].slug);
+              go(results[active]);
             }
           }}
         />
@@ -75,7 +77,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
             aria-selected={i === active}
             className={i === active ? 'st-palette__item is-active' : 'st-palette__item'}
             onMouseEnter={() => setActive(i)}
-            onClick={() => go(tool.slug)}
+            onClick={() => go(tool)}
           >
             <Icon name={tool.icon} size={18} />
             <span>

@@ -5,8 +5,8 @@ import { CATALOG } from './catalog';
 describe('Catálogo', () => {
   const registry = new ToolRegistry(CATALOG);
 
-  it('monta o registro sem conflitos e tem as 17 ferramentas disponíveis', () => {
-    expect(registry.available()).toHaveLength(17);
+  it('monta o registro sem conflitos e tem as 19 ferramentas disponíveis', () => {
+    expect(registry.available()).toHaveLength(19);
   });
 
   it('toda ferramenta disponível tem nome e descrição nos dois idiomas e palavras-chave', () => {

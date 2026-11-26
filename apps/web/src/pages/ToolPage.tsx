@@ -1,11 +1,12 @@
 import { Spinner } from '@guibonin/sakura-ui';
 import { Component, Suspense, useEffect, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, Navigate, useParams } from 'react-router';
 import { ToolHeader } from '../components/ToolShell';
 import { Notice } from '../components/ui';
 import { useI18n } from '../i18n/I18nProvider';
 import { useRecents } from '../lib/storage';
 import { useDocumentMeta } from '../lib/useDocumentMeta';
+import { FISCAL_ALIASES, toolBase, toolPath, type ToolBase } from '../lib/toolPath';
 import { TOOL_COMPONENTS, registry } from '../registry';
 import NotFound from './NotFound';
 
@@ -22,10 +23,12 @@ class ToolErrorBoundary extends Component<
   }
 }
 
-export default function ToolPage() {
-  const { slug = '' } = useParams();
+export default function ToolPage({ base = 'tools' }: { base?: ToolBase }) {
+  const { slug: rawSlug = '' } = useParams();
   const { t, tr, lt } = useI18n();
   const { push } = useRecents();
+  const alias = base === 'fiscal' ? FISCAL_ALIASES[rawSlug] : undefined;
+  const slug = alias ?? rawSlug;
   const tool = registry.getBySlug(slug);
   const Cmp = tool ? TOOL_COMPONENTS[tool.id] : undefined;
 
@@ -40,6 +43,8 @@ export default function ToolPage() {
   }, [tool, push]);
 
   if (!tool) return <NotFound />;
+  // Endereço do grupo errado (ex.: /tools/nfe-viewer) vai para o certo.
+  if (!alias && toolBase(tool) !== base) return <Navigate to={toolPath(tool)} replace />;
 
   if (tool.status === 'planned' || !Cmp) {
     return (

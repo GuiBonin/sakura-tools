@@ -19,6 +19,8 @@ const TOOLS = [
   'cnpj-validator',
   'access-key-validator',
   'nfe-viewer',
+  'rejection-codes',
+  'nfe-compare',
 ];
 
 /** Erros de console e de página, e requisições para fora do próprio app. */
@@ -208,6 +210,46 @@ test.describe('visualizador de NF-e', () => {
   }
 });
 
+test.describe('rotas e ferramentas fiscais', () => {
+  test('/tools/ de ferramenta fiscal vai para /fiscal/ e /fiscal/nfce-viewer abre o visualizador', async ({
+    page,
+  }) => {
+    await page.goto('/tools/rejection-codes');
+    await expect(page).toHaveURL(/\/fiscal\/rejection-codes$/);
+    await page.goto('/fiscal/nfce-viewer');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'Visualizador de NF-e e NFC-e',
+    );
+  });
+
+  for (const theme of ['dark', 'light'] as const) {
+    test(`comparador e rejeições com resultado no tema ${theme}: sem rolagem e sem violações sérias`, async ({
+      page,
+    }) => {
+      await page.addInitScript((t) => localStorage.setItem('sakura-tools-theme', t), theme);
+      const axe = async () => {
+        const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+        return results.violations
+          .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+          .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`);
+      };
+      await page.goto('/fiscal/nfe-compare');
+      await page.getByRole('button', { name: 'Exemplo' }).click();
+      await expect(page.getByRole('region', { name: 'Diferenças' })).toContainText(
+        '3 diferença(s)',
+      );
+      expect(await hasHorizontalScroll(page)).toBe(false);
+      expect(await axe()).toEqual([]);
+
+      await page.goto('/fiscal/rejection-codes');
+      await page.getByLabel('Código ou texto').fill('duplicidade');
+      await expect(page.getByRole('table')).toContainText('204');
+      expect(await hasHorizontalScroll(page)).toBe(false);
+      expect(await axe()).toEqual([]);
+    });
+  }
+});
+
 test.describe('chave de acesso', () => {
   for (const theme of ['dark', 'light'] as const) {
     test(`chave com erros no tema ${theme}: tabela marcada, sem rolagem e sem violações sérias`, async ({
@@ -332,7 +374,9 @@ test.describe('acessibilidade (axe)', () => {
       '/tools/hash-generator',
       '/tools/cnpj-validator',
       '/tools/access-key-validator',
-      '/tools/nfe-viewer',
+      '/fiscal/nfe-viewer',
+      '/fiscal/rejection-codes',
+      '/fiscal/nfe-compare',
       '/pricing',
     ]) {
       test(`${path} no tema ${theme} sem violações sérias`, async ({ page }) => {

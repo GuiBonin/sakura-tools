@@ -264,6 +264,47 @@ export const CATALOG: readonly ToolDefinition[] = [
   },
   {
     ...local,
+    id: 'rejection-codes',
+    slug: 'rejection-codes',
+    status: 'stable',
+    category: 'fiscal',
+    icon: 'BookOpen',
+    name: { 'pt-BR': 'Consulta de rejeições', en: 'Rejection Codes' },
+    description: {
+      'pt-BR':
+        'Busca códigos de rejeição, denegação e resultado (cStat) da NF-e na tabela oficial.',
+      en: 'Look up NF-e rejection, denial and result codes (cStat) in the official table.',
+    },
+    keywords: [
+      'rejeicao',
+      'rejeição',
+      'cstat',
+      'denegacao',
+      'erro',
+      'sefaz',
+      'nfe',
+      'nfce',
+      'codigo',
+      'rejection',
+    ],
+  },
+  {
+    ...local,
+    id: 'nfe-compare',
+    slug: 'nfe-compare',
+    status: 'stable',
+    category: 'fiscal',
+    icon: 'GitCompare',
+    name: { 'pt-BR': 'Comparador de XML de NF-e', en: 'NF-e XML Compare' },
+    description: {
+      'pt-BR':
+        'Compara dois XML de NF-e campo a campo e mostra o que mudou, o que falta e o que sobra.',
+      en: 'Compare two NF-e XML files field by field: changed, missing and extra values.',
+    },
+    keywords: ['comparar', 'diferenca', 'diff', 'xml', 'nfe', 'nfce', 'nota fiscal', 'compare'],
+  },
+  {
+    ...local,
     id: 'access-key-validator',
     slug: 'access-key-validator',
     status: 'stable',
@@ -292,7 +333,6 @@ export const CATALOG: readonly ToolDefinition[] = [
   // ---------------------------------------------------------- planejadas
   ...(
     [
-      ['rejection-codes', 'fiscal', 'BookOpen', 'Consulta de rejeições', 'Rejection Codes'],
       ['yaml-json', 'programming', 'FileCode', 'YAML ↔ JSON', 'YAML ↔ JSON'],
       ['csv-json', 'programming', 'Table', 'CSV ↔ JSON', 'CSV ↔ JSON'],
       ['sql-formatter', 'programming', 'Database', 'Formatador de SQL', 'SQL Formatter'],

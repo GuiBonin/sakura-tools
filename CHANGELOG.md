@@ -12,8 +12,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
   (entitlements, `SakuraExtension`, `AIProvider`).
 - Layout com sidebar responsiva, busca global (Ctrl+K), favoritos e recentes locais, temas claro
   e escuro, português e inglês.
-- 17 ferramentas locais: JSON, XML, Base64, URL, UUID, senhas, cores, regex, diff, Unix timestamp,
-  QR Code, hash, JWT, CPF, CNPJ, chave de acesso e visualizador de NF-e.
+- 19 ferramentas locais: JSON, XML, Base64, URL, UUID, senhas, cores, regex, diff, Unix timestamp,
+  QR Code, hash, JWT, CPF, CNPJ, chave de acesso, visualizador e comparador de NF-e e consulta de
+  rejeições.
 - Conversor de cores com CMYK (fórmula simples, sem perfil ICC), inclusive como entrada.
 - Páginas de planos, roadmap, changelog, documentação, contribuição, privacidade e termos
   (rascunhos para revisão jurídica).
@@ -32,3 +33,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
   Seletivo), totais, transporte, cobrança, pagamento, protocolo e XML formatado. Confere a chave
   do Id contra os campos da nota e contra o protocolo.
 - Pacote `packages/fiscal` e árvore XML com namespaces (`parseXmlTree`) em `packages/tools`.
+- Consulta de rejeições: tabela oficial de cStat do MOC 7.0, Anexo I (versão 7.03), com busca por
+  código ou texto e filtro por tipo. O visualizador mostra o texto oficial do cStat de protocolos
+  e retornos.
+- Visualizador: eventos (procEventoNFe, evento e retEvento) com conferência do Id, busca no XML,
+  download em JSON e itens em CSV.
+- Comparador de XML de NF-e campo a campo, ignorando a assinatura por padrão.
+- Ferramentas fiscais em `/fiscal/:slug`, com redirecionamento de `/tools/` e
+  `/fiscal/nfce-viewer`.

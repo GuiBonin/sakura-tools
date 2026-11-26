@@ -1,12 +1,13 @@
 import type { ToolDefinition } from '@sakura-tools/core';
 import { Link } from 'react-router';
 import { useI18n } from '../i18n/I18nProvider';
+import { toolPath } from '../lib/toolPath';
 import { Icon } from './Icon';
 
 export function ToolCard({ tool }: { tool: ToolDefinition }) {
   const { lt } = useI18n();
   return (
-    <Link to={`/tools/${tool.slug}`} className="st-tool-card">
+    <Link to={toolPath(tool)} className="st-tool-card">
       <span className="st-tool-card__icon">
         <Icon name={tool.icon} size={20} />
       </span>

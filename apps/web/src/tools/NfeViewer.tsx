@@ -1,14 +1,22 @@
-import { Accordion, Badge, Button, Select, Spinner, Tabs } from '@guibonin/sakura-ui';
+import { Accordion, Badge, Button, Input, Select, Spinner, Tabs } from '@guibonin/sakura-ui';
 import { describeCode } from '@sakura-tools/fiscal/codes';
 import { fieldLabel } from '@sakura-tools/fiscal/labels';
-import type { FiscalDocument, FiscalIssue, NfeView, ProtocolView } from '@sakura-tools/fiscal/nfe';
+import { itemsToCsv } from '@sakura-tools/fiscal/export';
+import type {
+  EventView,
+  FiscalDocument,
+  FiscalIssue,
+  NfeView,
+  ProtocolView,
+} from '@sakura-tools/fiscal/nfe';
+import { findCStat } from '@sakura-tools/fiscal/rejections';
 import { buildSampleNfe } from '@sakura-tools/fiscal/sample';
 import { formatAccessKey } from '@sakura-tools/tools/accessKey';
 import { msg } from '@sakura-tools/tools/messages';
 import { XML_MAX_INPUT } from '@sakura-tools/tools/xml';
-import type { XmlElement } from '@sakura-tools/tools/xmlTree';
+import { xmlTreeToJson, type XmlElement } from '@sakura-tools/tools/xmlTree';
 import { Download, Upload, X } from 'lucide-react';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ToolHelp } from '../components/ToolShell';
 import { downloadBlob, Notice, Output, ResultRow, TextArea, Toolbar } from '../components/ui';
 import { useI18n } from '../i18n/I18nProvider';
@@ -107,6 +115,29 @@ function IssueList({ issues }: { issues: FiscalIssue[] }) {
   );
 }
 
+/** Texto do cStat na tabela oficial (MOC 7.0, Anexo I), quando o código está lá. */
+function CStatOfficial({ code }: { code?: string }) {
+  const { tr } = useI18n();
+  if (!code) return null;
+  const rows = findCStat(code);
+  if (rows.length === 0) {
+    return (
+      <p className="st-hint">
+        {tr(
+          `O cStat ${code} não está na tabela do MOC 7.0, Anexo I (versão 7.03).`,
+          `cStat ${code} is not in the MOC 7.0, Annex I table (version 7.03).`,
+        )}
+      </p>
+    );
+  }
+  return (
+    <p className="st-hint">
+      {tr('Tabela oficial (MOC 7.0, Anexo I)', 'Official table (MOC 7.0, Annex I)')}:{' '}
+      {rows.map((r) => r.text).join(' / ')}
+    </p>
+  );
+}
+
 function ProtocolBlock({ p }: { p: ProtocolView }) {
   const { tr } = useI18n();
   return (
@@ -117,7 +148,145 @@ function ProtocolBlock({ p }: { p: ProtocolView }) {
           'The protocol is shown as it appears in the XML. The signature is not checked and SEFAZ is not queried, so this does not prove the invoice was authorized.',
         )}
       </Notice>
+      <CStatOfficial code={p.cStat} />
       <GroupView el={p.node} />
+    </div>
+  );
+}
+
+function EventBlock({ ev }: { ev: EventView }) {
+  const { tr } = useI18n();
+  return (
+    <section className="st-stack">
+      <h2 className="st-h2">
+        {tr('Evento', 'Event')} {ev.descEvento ?? ''}
+        {(ev.tpEvento ?? ev.ret?.tpEvento) ? ` (${ev.tpEvento ?? ev.ret?.tpEvento})` : ''}
+      </h2>
+      <IssueList issues={ev.issues} />
+      {ev.node && (
+        <dl className="st-dl">
+          {ev.chNFe && (
+            <Row label={tr('Chave da NF-e', 'NF-e key')}>
+              <code>{formatAccessKey(ev.chNFe)}</code>
+            </Row>
+          )}
+          {ev.nSeqEvento && <Row label={tr('Sequência', 'Sequence')}>{ev.nSeqEvento}</Row>}
+          {ev.dhEvento && <Row label={tr('Data do evento', 'Event date')}>{ev.dhEvento}</Row>}
+          {ev.author && <Row label={tr('Autor', 'Author')}>{ev.author}</Row>}
+          {ev.tpAmb && (
+            <Row label={tr('Ambiente', 'Environment')}>
+              <CodeValue field="tpAmb" value={ev.tpAmb} />
+            </Row>
+          )}
+        </dl>
+      )}
+      {ev.detEvento && (
+        <section>
+          <h3 className="st-h3">{tr('Detalhes do evento', 'Event details')}</h3>
+          <GroupView el={ev.detEvento} />
+        </section>
+      )}
+      {ev.ret && (
+        <section className="st-stack">
+          <h3 className="st-h3">
+            {tr('Retorno do evento', 'Event response')}: cStat {ev.ret.cStat ?? '—'}
+            {ev.ret.xMotivo ? ` · ${ev.ret.xMotivo}` : ''}
+          </h3>
+          <Notice tone="warning" title={tr('Retorno não verificado', 'Response not verified')}>
+            {tr(
+              'O retorno é mostrado como está no XML. A assinatura não é conferida e a SEFAZ não é consultada.',
+              'The response is shown as it appears in the XML. The signature is not checked and SEFAZ is not queried.',
+            )}
+          </Notice>
+          <CStatOfficial code={ev.ret.cStat} />
+          <GroupView el={ev.ret.node} />
+        </section>
+      )}
+    </section>
+  );
+}
+
+const MAX_MATCHES = 200;
+
+/** Busca, download e visão formatada do XML do documento inteiro. */
+function XmlTools({
+  xml,
+  formatted,
+  tree,
+  baseName,
+}: {
+  xml: string;
+  formatted: string | null;
+  tree: XmlElement;
+  baseName: string;
+}) {
+  const { tr } = useI18n();
+  const [q, setQ] = useState('');
+  const text = formatted ?? xml;
+  const matches = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return [];
+    const out: { n: number; line: string }[] = [];
+    text.split('\n').forEach((line, i) => {
+      if (line.toLowerCase().includes(needle)) out.push({ n: i + 1, line: line.trim() });
+    });
+    return out;
+  }, [q, text]);
+  return (
+    <div className="st-stack">
+      <Toolbar>
+        <Button
+          variant="soft"
+          leftIcon={<Download size={16} />}
+          onClick={() => downloadBlob(xml, `${baseName}.xml`, 'application/xml')}
+        >
+          {tr('Baixar XML original', 'Download original XML')}
+        </Button>
+        <Button
+          variant="soft"
+          leftIcon={<Download size={16} />}
+          onClick={() =>
+            downloadBlob(
+              `${JSON.stringify(xmlTreeToJson(tree), null, 2)}\n`,
+              `${baseName}.json`,
+              'application/json',
+            )
+          }
+        >
+          {tr('Baixar em JSON', 'Download as JSON')}
+        </Button>
+      </Toolbar>
+      <Input
+        label={tr('Buscar no XML', 'Search the XML')}
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder={tr('Ex.: vNF ou 5102', 'E.g. vNF or 5102')}
+        autoComplete="off"
+      />
+      {q.trim() && (
+        <div className="st-stack">
+          <p className="st-hint" role="status">
+            {matches.length === 0
+              ? tr('Nenhuma linha encontrada.', 'No line found.')
+              : tr(`${matches.length} linha(s) encontrada(s).`, `${matches.length} line(s) found.`)}
+          </p>
+          {matches.length > 0 && (
+            <ol className="st-xml-matches" aria-label={tr('Linhas encontradas', 'Lines found')}>
+              {matches.slice(0, MAX_MATCHES).map((m) => (
+                <li key={m.n}>
+                  <span className="st-muted st-mono">{m.n}</span> <code>{m.line}</code>
+                </li>
+              ))}
+            </ol>
+          )}
+          {matches.length > MAX_MATCHES && (
+            <p className="st-hint">
+              {tr(`Mostrando as primeiras ${MAX_MATCHES}.`, `Showing the first ${MAX_MATCHES}.`)}
+            </p>
+          )}
+        </div>
+      )}
+      <Output label={tr('XML formatado', 'Formatted XML')} value={text} rows={16} />
     </div>
   );
 }
@@ -126,10 +295,12 @@ function NfeDetail({
   nfe,
   formatted,
   xml,
+  tree,
 }: {
   nfe: NfeView;
   formatted: string | null;
   xml: string;
+  tree: XmlElement;
 }) {
   const { tr, locale } = useI18n();
   const money = useMoney();
@@ -216,6 +387,21 @@ function NfeDetail({
             <p className="st-hint">{tr('A nota não tem itens.', 'The invoice has no items.')}</p>
           ) : (
             <div className="st-stack">
+              <Toolbar>
+                <Button
+                  variant="soft"
+                  leftIcon={<Download size={16} />}
+                  onClick={() =>
+                    downloadBlob(
+                      `\uFEFF${itemsToCsv(nfe.items)}`,
+                      `${keyText || 'nfe'}-itens.csv`,
+                      'text/csv;charset=utf-8',
+                    )
+                  }
+                >
+                  {tr('Baixar itens em CSV', 'Download items as CSV')}
+                </Button>
+              </Toolbar>
               <div className="st-table-wrap">
                 <table className="st-table">
                   <caption>{tr('Itens da nota', 'Invoice items')}</caption>
@@ -326,22 +512,7 @@ function NfeDetail({
         </Tabs.Panel>
 
         <Tabs.Panel value="xml">
-          <div className="st-stack">
-            <Toolbar>
-              <Button
-                variant="soft"
-                leftIcon={<Download size={16} />}
-                onClick={() => downloadBlob(xml, `${keyText || 'nfe'}.xml`, 'application/xml')}
-              >
-                {tr('Baixar XML original', 'Download original XML')}
-              </Button>
-            </Toolbar>
-            <Output
-              label={tr('XML formatado', 'Formatted XML')}
-              value={formatted ?? xml}
-              rows={16}
-            />
-          </div>
+          <XmlTools xml={xml} formatted={formatted} tree={tree} baseName={keyText || 'nfe'} />
         </Tabs.Panel>
       </Tabs>
     </div>
@@ -370,6 +541,9 @@ function DocumentView({ doc, run, xml }: { doc: FiscalDocument; run: NfeRun; xml
     enviNFe: tr('Lote de envio (enviNFe)', 'Submission batch (enviNFe)'),
     retEnviNFe: tr('Retorno do envio (retEnviNFe)', 'Submission response (retEnviNFe)'),
     protNFe: tr('Protocolo avulso (protNFe)', 'Standalone protocol (protNFe)'),
+    procEventoNFe: tr('Evento com retorno (procEventoNFe)', 'Event with response (procEventoNFe)'),
+    evento: tr('Evento sem retorno (evento)', 'Event without response (evento)'),
+    retEvento: tr('Retorno de evento (retEvento)', 'Event response (retEvento)'),
   };
 
   return (
@@ -390,6 +564,7 @@ function DocumentView({ doc, run, xml }: { doc: FiscalDocument; run: NfeRun; xml
         <dl className="st-dl">
           <Row label={tr('Status do lote', 'Batch status')}>
             {doc.response.cStat ?? '—'} {doc.response.xMotivo}
+            <CStatOfficial code={doc.response.cStat} />
           </Row>
           {doc.response.tpAmb && (
             <Row label={tr('Ambiente', 'Environment')}>
@@ -419,7 +594,17 @@ function DocumentView({ doc, run, xml }: { doc: FiscalDocument; run: NfeRun; xml
           }))}
         />
       )}
-      {nfe && <NfeDetail key={index} nfe={nfe} formatted={run.formatted} xml={xml} />}
+      {doc.events.map((ev, i) => (
+        <EventBlock key={i} ev={ev} />
+      ))}
+      {nfe ? (
+        <NfeDetail key={index} nfe={nfe} formatted={run.formatted} xml={xml} tree={doc.tree} />
+      ) : (
+        <section className="st-stack">
+          <h2 className="st-h2">{tr('XML do documento', 'Document XML')}</h2>
+          <XmlTools xml={xml} formatted={run.formatted} tree={doc.tree} baseName={doc.root} />
+        </section>
+      )}
     </div>
   );
 }
@@ -559,14 +744,20 @@ export default function NfeViewer() {
       <ToolHelp>
         <p>
           {tr(
-            'Aceita NFe, nfeProc (nota com protocolo), enviNFe (lote), retEnviNFe (retorno do envio) e protNFe, no layout 4.00 com os grupos de IBS, CBS e Imposto Seletivo. Campos ausentes são normais e não aparecem.',
-            'Accepts NFe, nfeProc (invoice with protocol), enviNFe (batch), retEnviNFe (submission response) and protNFe, layout 4.00 including the IBS, CBS and Selective Tax groups. Missing fields are normal and are not shown.',
+            'Aceita NFe, nfeProc (nota com protocolo), enviNFe (lote), retEnviNFe (retorno do envio), protNFe e eventos (procEventoNFe, evento e retEvento), no layout 4.00 com os grupos de IBS, CBS e Imposto Seletivo. Campos ausentes são normais e não aparecem.',
+            'Accepts NFe, nfeProc (invoice with protocol), enviNFe (batch), retEnviNFe (submission response), protNFe and events (procEventoNFe, evento and retEvento), layout 4.00 including the IBS, CBS and Selective Tax groups. Missing fields are normal and are not shown.',
           )}
         </p>
         <p>
           {tr(
             'A chave de acesso do atributo Id é validada e comparada com cUF, ano e mês de emissão, CNPJ ou CPF do emitente, modelo, série, número, forma de emissão, código numérico e dígito verificador. A chave do protocolo também é comparada com a da nota.',
             'The access key in the Id attribute is validated and compared with cUF, issue year and month, issuer CNPJ or CPF, model, series, number, issue type, numeric code and check digit. The protocol key is also compared with the invoice key.',
+          )}
+        </p>
+        <p>
+          {tr(
+            'O cStat de protocolos e retornos é comparado com a tabela oficial do MOC 7.0, Anexo I (versão 7.03). Na aba XML dá para buscar no XML e baixar o documento em JSON; na aba Itens, baixar os itens em CSV (separador ponto e vírgula).',
+            'The cStat of protocols and responses is matched against the official MOC 7.0, Annex I table (version 7.03). The XML tab lets you search the XML and download the document as JSON; the Items tab lets you download items as CSV (semicolon separated).',
           )}
         </p>
         <p>

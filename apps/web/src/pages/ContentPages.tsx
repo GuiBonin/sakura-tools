@@ -172,7 +172,7 @@ export function Changelog() {
             'Core with tool registry, search, favorites and recents.',
           )}
         </li>
-        <li>{tr('17 ferramentas locais iniciais.', '17 initial local tools.')}</li>
+        <li>{tr('19 ferramentas locais iniciais.', '19 initial local tools.')}</li>
         <li>
           {tr(
             'Temas claro e escuro, português e inglês.',

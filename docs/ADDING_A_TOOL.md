@@ -52,6 +52,10 @@ Registre em `apps/web/src/registry.ts`:
 'word-counter': lazy(() => import('./tools/WordCounter')),
 ```
 
+A URL sai da categoria: `/tools/word-counter`, ou `/fiscal/<slug>` para a categoria `fiscal`.
+Links internos usam `toolPath(tool)` de `apps/web/src/lib/toolPath.ts`, nunca o caminho escrito à
+mão.
+
 ## 4. Verificação
 
 ```bash
