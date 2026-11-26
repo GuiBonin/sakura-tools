@@ -43,7 +43,7 @@ describe('Navegação', () => {
   });
 
   it('ferramenta planejada não é apresentada como funcional', async () => {
-    renderApp('/tools/nfe-viewer');
+    renderApp('/tools/rejection-codes');
     expect(
       await screen.findByText(/está planejada e ainda não foi implementada/),
     ).toBeInTheDocument();

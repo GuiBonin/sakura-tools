@@ -1,5 +1,6 @@
 export * from './json';
 export * from './xml';
+export * from './xmlTree';
 export * from './base64';
 export * from './url';
 export * from './uuid';

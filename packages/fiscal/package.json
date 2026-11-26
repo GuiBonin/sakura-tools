@@ -1,0 +1,18 @@
+{
+  "name": "@sakura-tools/fiscal",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@sakura-tools/core": "^0.1.0",
+    "@sakura-tools/tools": "^0.1.0"
+  }
+}

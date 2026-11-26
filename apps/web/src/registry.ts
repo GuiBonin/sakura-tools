@@ -26,4 +26,5 @@ export const TOOL_COMPONENTS: Record<string, LazyExoticComponent<ComponentType>>
   'cpf-validator': lazy(() => import('./tools/CpfValidator')),
   'cnpj-validator': lazy(() => import('./tools/CnpjValidator')),
   'access-key-validator': lazy(() => import('./tools/AccessKeyValidator')),
+  'nfe-viewer': lazy(() => import('./tools/NfeViewer')),
 };

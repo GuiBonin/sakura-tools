@@ -132,7 +132,6 @@ export const CATALOG: readonly ToolDefinition[] = [
       en: 'Test regular expressions with highlighted matches and groups, isolated in a Web Worker.',
     },
     keywords: ['regex', 'regexp', 'expressao regular', 'regular expression', 'match'],
-    requirements: ['Worker'],
   },
   {
     ...local,
@@ -235,6 +234,36 @@ export const CATALOG: readonly ToolDefinition[] = [
   },
   {
     ...local,
+    id: 'nfe-viewer',
+    slug: 'nfe-viewer',
+    status: 'stable',
+    category: 'fiscal',
+    icon: 'FileText',
+    name: { 'pt-BR': 'Visualizador de NF-e e NFC-e', en: 'NF-e and NFC-e Viewer' },
+    description: {
+      'pt-BR':
+        'Lê o XML da nota no navegador: emitente, itens, impostos com IBS e CBS, totais e protocolo.',
+      en: 'Read the invoice XML in your browser: issuer, items, taxes including IBS and CBS, totals and protocol.',
+    },
+    keywords: [
+      'nfe',
+      'nf-e',
+      'nfce',
+      'nfc-e',
+      'xml',
+      'nota fiscal',
+      'visualizar',
+      'danfe',
+      'nfeproc',
+      'protocolo',
+      'ibs',
+      'cbs',
+      'viewer',
+    ],
+    requirements: ['Worker'],
+  },
+  {
+    ...local,
     id: 'access-key-validator',
     slug: 'access-key-validator',
     status: 'stable',
@@ -263,7 +292,6 @@ export const CATALOG: readonly ToolDefinition[] = [
   // ---------------------------------------------------------- planejadas
   ...(
     [
-      ['nfe-viewer', 'fiscal', 'FileText', 'Visualizador de NF-e e NFC-e', 'NF-e and NFC-e Viewer'],
       ['rejection-codes', 'fiscal', 'BookOpen', 'Consulta de rejeições', 'Rejection Codes'],
       ['yaml-json', 'programming', 'FileCode', 'YAML ↔ JSON', 'YAML ↔ JSON'],
       ['csv-json', 'programming', 'Table', 'CSV ↔ JSON', 'CSV ↔ JSON'],

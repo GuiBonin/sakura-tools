@@ -27,7 +27,7 @@ Tudo processado no seu navegador. Open source. Powered by [Sakura UI](https://gi
 | Frontend    | Conversor HEX/RGB/HSL/CMYK com contraste WCAG                                                                          |
 | Datas       | Unix Timestamp com fusos horários                                                                                      |
 | Brasil      | Validador e gerador de teste de CPF e CNPJ (inclusive CNPJ alfanumérico)                                               |
-| Fiscal      | Validador de chave de acesso da NF-e e da NFC-e, campo a campo (inclusive CNPJ alfanumérico)                           |
+| Fiscal      | Visualizador de NF-e e NFC-e (itens, impostos com IBS e CBS, totais, protocolo), validador de chave de acesso          |
 
 ## Privacidade
 
@@ -65,6 +65,7 @@ Abra http://localhost:5173. Não precisa de conta, chave de API nem banco de dad
 apps/web          App React + Vite
 packages/core     Contratos públicos: registro de ferramentas, entitlements, extensões
 packages/tools    Lógica pura das ferramentas e catálogo
+packages/fiscal   Leitura de NF-e e NFC-e (layout 4.00), tabelas de códigos e rótulos
 docs/             Arquitetura, segurança e como criar uma ferramenta
 ```
 

@@ -18,6 +18,7 @@ const TOOLS = [
   'cpf-validator',
   'cnpj-validator',
   'access-key-validator',
+  'nfe-viewer',
 ];
 
 /** Erros de console e de página, e requisições para fora do próprio app. */
@@ -154,6 +155,59 @@ test.describe('QR Code', () => {
   });
 });
 
+test.describe('visualizador de NF-e', () => {
+  const fixture = (nNF: string) =>
+    `<?xml version="1.0" encoding="UTF-8"?><NFe xmlns="http://www.portalfiscal.inf.br/nfe"><infNFe Id="NFe00000000000000000000000000000000000000000000" versao="4.00"><ide><nNF>${nNF}</nNF><mod>55</mod><tpAmb>2</tpAmb></ide><emit><xNome>EMPRESA FICTICIA</xNome></emit></infNFe></NFe>`;
+
+  test('exemplo lido no Web Worker real, abas e sem rolagem horizontal', async ({ page }) => {
+    const w = watch(page);
+    const workers: string[] = [];
+    page.on('worker', (wk) => workers.push(wk.url()));
+    await page.goto('/tools/nfe-viewer');
+    await page.getByRole('button', { name: 'Exemplo' }).click();
+    const region = page.getByRole('region', { name: 'Nota lida' });
+    await expect(region).toContainText('NF-e com protocolo (nfeProc)');
+    expect(workers.some((u) => u.includes('nfe.worker'))).toBe(true);
+    for (const tab of ['Itens (2)', 'Totais', 'Transporte e pagamento', 'Protocolo', 'XML']) {
+      await page.getByRole('tab', { name: tab }).click();
+      expect(await hasHorizontalScroll(page), tab).toBe(false);
+    }
+    await expect(page.getByLabel('XML formatado', { exact: true })).toHaveValue(/<infNFe/);
+    expect(w.problems).toEqual([]);
+    expect(w.external).toEqual([]);
+  });
+
+  test('arquivo enviado pelo seletor mostra o problema da chave', async ({ page }) => {
+    await page.goto('/tools/nfe-viewer');
+    await page.locator('#nfe-file').setInputFiles({
+      name: 'nota.xml',
+      mimeType: 'application/xml',
+      buffer: Buffer.from(fixture('7')),
+    });
+    await expect(page.getByText('nota.xml')).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Nota lida' })).toContainText(
+      'Problemas encontrados',
+    );
+  });
+
+  for (const theme of ['dark', 'light'] as const) {
+    test(`nota lida no tema ${theme} sem violações sérias`, async ({ page }) => {
+      await page.addInitScript((t) => localStorage.setItem('sakura-tools-theme', t), theme);
+      await page.goto('/tools/nfe-viewer');
+      await page.getByRole('button', { name: 'Exemplo' }).click();
+      await expect(page.getByRole('region', { name: 'Nota lida' })).toBeVisible();
+      await page.getByRole('tab', { name: 'Itens (2)' }).click();
+      await page.getByRole('button', { name: /Item 1 ·/ }).click();
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+      const serious = results.violations
+        .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+        .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`);
+      expect(serious).toEqual([]);
+      expect(await hasHorizontalScroll(page)).toBe(false);
+    });
+  }
+});
+
 test.describe('chave de acesso', () => {
   for (const theme of ['dark', 'light'] as const) {
     test(`chave com erros no tema ${theme}: tabela marcada, sem rolagem e sem violações sérias`, async ({
@@ -278,6 +332,7 @@ test.describe('acessibilidade (axe)', () => {
       '/tools/hash-generator',
       '/tools/cnpj-validator',
       '/tools/access-key-validator',
+      '/tools/nfe-viewer',
       '/pricing',
     ]) {
       test(`${path} no tema ${theme} sem violações sérias`, async ({ page }) => {

@@ -8,12 +8,14 @@ sakura-tools/                 (público, MIT)
 │   ├── src/components/       Layout, command palette, peças de UI que a Sakura UI não tem
 │   ├── src/tools/            Um componente por ferramenta (carregado sob demanda)
 │   ├── src/pages/            Home, página de ferramenta, categoria, institucionais
-│   ├── src/workers/          Web Workers (regex)
+│   ├── src/workers/          Web Workers (regex, leitura de NF-e)
 │   ├── src/i18n/             Dicionários pt-BR / en
 │   └── src/lib/              storage seguro, meta tags, executor de regex
 ├── packages/core/            Contratos públicos: ToolDefinition, ToolRegistry, entitlements,
 │                             SakuraExtension, AIProvider. Sem dependências.
 ├── packages/tools/           Lógica pura de cada ferramenta + catálogo. Sem React.
+├── packages/fiscal/          Leitura de NF-e e NFC-e sobre a árvore XML de packages/tools,
+│                             tabelas de códigos e rótulos do XSD. Sem React.
 ├── tests/setup.ts            Setup do Vitest (jsdom)
 └── docs/                     Esta documentação
 ```

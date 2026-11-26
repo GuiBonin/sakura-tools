@@ -362,6 +362,43 @@ kbd {
   color: var(--sk-fg-subtle);
 }
 
+.st-h3 {
+  margin: var(--sk-space-2) 0 var(--sk-space-2);
+  font-size: var(--sk-text-md);
+  font-weight: var(--sk-weight-semibold);
+}
+
+.st-muted {
+  color: var(--sk-fg-muted);
+}
+
+/* ---------------------------------------------------------- nf-e */
+.st-nfe-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sk-space-2);
+}
+.st-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sk-space-3);
+  min-width: 0;
+}
+.st-group .st-dl dd {
+  overflow-wrap: anywhere;
+}
+.st-group__sub {
+  padding-left: var(--sk-space-3);
+  border-left: 2px solid var(--sk-border);
+}
+.st-group__title {
+  margin: 0 0 var(--sk-space-2);
+  font-size: var(--sk-text-sm);
+  font-weight: var(--sk-weight-semibold);
+}
+
 .st-mono,
 .st-mono input {
   font-family: var(--sk-font-mono);

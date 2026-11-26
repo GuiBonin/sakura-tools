@@ -12,8 +12,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
   (entitlements, `SakuraExtension`, `AIProvider`).
 - Layout com sidebar responsiva, busca global (Ctrl+K), favoritos e recentes locais, temas claro
   e escuro, português e inglês.
-- 16 ferramentas locais: JSON, XML, Base64, URL, UUID, senhas, cores, regex, diff, Unix timestamp,
-  QR Code, hash, JWT, CPF, CNPJ e chave de acesso.
+- 17 ferramentas locais: JSON, XML, Base64, URL, UUID, senhas, cores, regex, diff, Unix timestamp,
+  QR Code, hash, JWT, CPF, CNPJ, chave de acesso e visualizador de NF-e.
 - Conversor de cores com CMYK (fórmula simples, sem perfil ICC), inclusive como entrada.
 - Páginas de planos, roadmap, changelog, documentação, contribuição, privacidade e termos
   (rascunhos para revisão jurídica).
@@ -27,3 +27,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - Validador de chave de acesso da NF-e e da NFC-e: confere UF, mês, CNPJ ou CPF do emitente,
   modelo, número, forma de emissão, código numérico (regra B03-10 da NT 2019.001) e dígito
   verificador com CNPJ alfanumérico (NT 2025.001).
+- Visualizador de NF-e e NFC-e: lê NFe, nfeProc, enviNFe, retEnviNFe e protNFe no layout 4.00 em
+  Web Worker, com resumo, emitente, destinatário, itens, impostos (inclusive IBS, CBS e Imposto
+  Seletivo), totais, transporte, cobrança, pagamento, protocolo e XML formatado. Confere a chave
+  do Id contra os campos da nota e contra o protocolo.
+- Pacote `packages/fiscal` e árvore XML com namespaces (`parseXmlTree`) em `packages/tools`.

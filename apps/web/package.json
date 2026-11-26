@@ -13,6 +13,7 @@
   "dependencies": {
     "@guibonin/sakura-ui": "^0.2.0",
     "@sakura-tools/core": "^0.1.0",
+    "@sakura-tools/fiscal": "^0.1.0",
     "@sakura-tools/tools": "^0.1.0",
     "lucide-react": "^1.80.0",
     "react": "^19.3.1",

@@ -108,6 +108,10 @@ const MESSAGES = {
   },
   'xml.unclosedTag': { 'pt-BR': 'Tag <{name}> não fechada.', en: 'Tag <{name}> is not closed.' },
   'xml.noElement': { 'pt-BR': 'Nenhum elemento encontrado.', en: 'No element found.' },
+  'xml.unboundPrefix': {
+    'pt-BR': 'O prefixo de namespace "{prefix}" é usado sem ter sido declarado.',
+    en: 'Namespace prefix "{prefix}" is used without being declared.',
+  },
   // Senha
   'password.noSets': {
     'pt-BR': 'Selecione pelo menos um tipo de caractere.',
@@ -318,6 +322,66 @@ const MESSAGES = {
   'accessKey.badDv': {
     'pt-BR': 'O dígito verificador não confere. Esperado {expected}, informado {found}.',
     en: 'The check digit does not match. Expected {expected}, got {found}.',
+  },
+  // NF-e e NFC-e (visualizador)
+  'nfe.unsupportedRoot': {
+    'pt-BR':
+      'O elemento raiz <{root}> não é um documento suportado. São aceitos NFe, nfeProc, enviNFe, retEnviNFe e protNFe.',
+    en: 'Root element <{root}> is not a supported document. Accepted: NFe, nfeProc, enviNFe, retEnviNFe and protNFe.',
+  },
+  'nfe.wrongNamespace': {
+    'pt-BR':
+      'O namespace do documento ({ns}) não é o da NF-e (http://www.portalfiscal.inf.br/nfe).',
+    en: 'The document namespace ({ns}) is not the NF-e one (http://www.portalfiscal.inf.br/nfe).',
+  },
+  'nfe.noInfNFe': {
+    'pt-BR': 'Não há grupo infNFe com os dados da nota.',
+    en: 'There is no infNFe group with the invoice data.',
+  },
+  'nfe.noInfProt': {
+    'pt-BR': 'O protocolo não tem o grupo infProt.',
+    en: 'The protocol has no infProt group.',
+  },
+  'nfe.badId': {
+    'pt-BR':
+      'O atributo Id do infNFe ("{id}") não tem a forma "NFe" seguida dos 44 caracteres da chave.',
+    en: 'The infNFe Id attribute ("{id}") is not "NFe" followed by the 44-character key.',
+  },
+  'nfe.keyInvalid': {
+    'pt-BR': 'A chave de acesso no Id tem problemas. Veja os detalhes da chave.',
+    en: 'The access key in the Id has problems. See the key details.',
+  },
+  'nfe.keyFieldMismatch': {
+    'pt-BR': 'O campo {field} do XML ({xml}) é diferente do que está na chave ({key}).',
+    en: 'Field {field} in the XML ({xml}) differs from the key ({key}).',
+  },
+  'nfe.aammMismatch': {
+    'pt-BR': 'O ano e mês da chave ({aamm}) não batem com a data de emissão ({dhEmi}).',
+    en: 'The key year and month ({aamm}) do not match the issue date ({dhEmi}).',
+  },
+  'nfe.unsupportedVersion': {
+    'pt-BR': 'A versão do layout é {version}. Esta leitura segue o layout 4.00.',
+    en: 'The layout version is {version}. This reader follows layout 4.00.',
+  },
+  'nfe.homologation': {
+    'pt-BR': 'Nota emitida em ambiente de homologação (testes).',
+    en: 'Invoice issued in the homologation (testing) environment.',
+  },
+  'nfe.noProtocol': {
+    'pt-BR': 'O XML não traz protocolo de autorização (protNFe).',
+    en: 'The XML has no authorization protocol (protNFe).',
+  },
+  'nfe.workerFailed': {
+    'pt-BR': 'Não deu para ler o XML. Tente de novo ou use um arquivo menor.',
+    en: 'Could not read the XML. Try again or use a smaller file.',
+  },
+  'nfe.fileTooLarge': {
+    'pt-BR': 'Arquivo maior que o limite de {max} MB.',
+    en: 'File exceeds the {max} MB limit.',
+  },
+  'nfe.protocolKeyMismatch': {
+    'pt-BR': 'A chave do protocolo ({protocol}) é diferente da chave da nota ({key}).',
+    en: 'The protocol key ({protocol}) differs from the invoice key ({key}).',
   },
 } as const satisfies Record<string, Record<Locale, string>>;
 
