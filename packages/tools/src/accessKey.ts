@@ -353,6 +353,22 @@ export function buildAccessKey(d: AccessKeyDraft): string {
 const randomDigits = (n: number) => Array.from({ length: n }, () => randomInt(10)).join('');
 
 /**
+ * CNPJ fictício que não pode ser lido também como CPF. Um CNPJ com raiz
+ * começando em 000 pode formar um CPF válido nas 11 posições seguintes, e a
+ * chave sairia com o aviso de emitente ambíguo.
+ */
+export function isAmbiguousEmitter(emitter: string): boolean {
+  const { cnpj, cpf } = identifyEmitter(emitter);
+  return cnpj.valid && cpf !== null;
+}
+
+function unambiguousCnpj(): string {
+  let cnpj = generateCnpj();
+  while (isAmbiguousEmitter(cnpj)) cnpj = generateCnpj();
+  return cnpj;
+}
+
+/**
  * Gera uma chave fictícia de NF-e para TESTES: CNPJ fictício, emissão normal,
  * mês atual e cNF fora da lista proibida.
  */
@@ -369,7 +385,7 @@ export function generateAccessKey(
     aamm:
       String(now.getFullYear() % 100).padStart(2, '0') +
       String(now.getMonth() + 1).padStart(2, '0'),
-    emitter: opts.emitter ?? generateCnpj(),
+    emitter: opts.emitter ?? unambiguousCnpj(),
     mod: opts.mod ?? '55',
     serie: String(1 + randomInt(99)).padStart(3, '0'),
     nNF,

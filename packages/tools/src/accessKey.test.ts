@@ -5,6 +5,7 @@ import {
   buildAccessKey,
   formatAccessKey,
   generateAccessKey,
+  isAmbiguousEmitter,
   normalizeAccessKey,
   validateAccessKey,
   WEAK_CNF,
@@ -360,6 +361,13 @@ describe('buildAccessKey e generateAccessKey', () => {
       expect(r.parts?.mod).toBe('55');
       expect(r.parts?.tpEmis).toBe('1');
     }
+  });
+
+  it('isAmbiguousEmitter reconhece CNPJ que também é CPF com zeros', () => {
+    // O gerador descarta esses CNPJs para a chave de exemplo não sair com aviso.
+    expect(isAmbiguousEmitter('00047823085909')).toBe(true);
+    expect(isAmbiguousEmitter('11222333000181')).toBe(false);
+    expect(isAmbiguousEmitter('00052998224725')).toBe(false); // só CPF
   });
 
   it('gera NFC-e e aceita emitente informado', () => {
