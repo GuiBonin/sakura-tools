@@ -25,4 +25,5 @@ export const TOOL_COMPONENTS: Record<string, LazyExoticComponent<ComponentType>>
   'jwt-decoder': lazy(() => import('./tools/JwtDecoder')),
   'cpf-validator': lazy(() => import('./tools/CpfValidator')),
   'cnpj-validator': lazy(() => import('./tools/CnpjValidator')),
+  'access-key-validator': lazy(() => import('./tools/AccessKeyValidator')),
 };

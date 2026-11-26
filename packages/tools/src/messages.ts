@@ -241,6 +241,84 @@ const MESSAGES = {
     'pt-BR': 'Os dígitos verificadores não conferem.',
     en: 'The check digits do not match.',
   },
+  // Chave de acesso (NF-e e NFC-e)
+  'accessKey.badChars': {
+    'pt-BR': 'A chave só pode ter números e, no trecho do CNPJ, letras.',
+    en: 'The key can only contain digits and, in the CNPJ part, letters.',
+  },
+  'accessKey.badLength': {
+    'pt-BR': 'A chave de acesso tem 44 caracteres. Foram informados {count}.',
+    en: 'An access key has 44 characters. {count} were given.',
+  },
+  'accessKey.lettersOutsideCnpj': {
+    'pt-BR':
+      'Letras só são aceitas nas 12 primeiras posições do CNPJ (posições 7 a 18 da chave). O resto da chave é só número.',
+    en: 'Letters are only accepted in the first 12 CNPJ positions (key positions 7 to 18). The rest of the key is digits only.',
+  },
+  'accessKey.badUf': {
+    'pt-BR': 'O código de UF {code} não existe na tabela do IBGE.',
+    en: 'State code {code} does not exist in the IBGE table.',
+  },
+  'accessKey.badMonth': {
+    'pt-BR': 'O mês de emissão {month} não existe. O mês vai de 01 a 12.',
+    en: 'Issue month {month} does not exist. Months go from 01 to 12.',
+  },
+  'accessKey.futureDate': {
+    'pt-BR': 'O mês de emissão ({aamm}) ainda não chegou.',
+    en: 'The issue month ({aamm}) is in the future.',
+  },
+  'accessKey.emitterInvalid': {
+    'pt-BR': 'As posições 7 a 20 ({value}) não formam um CNPJ nem um CPF válido.',
+    en: 'Positions 7 to 20 ({value}) are neither a valid CNPJ nor a valid CPF.',
+  },
+  'accessKey.cnpjInvalid': {
+    'pt-BR': 'O CNPJ alfanumérico do emitente ({value}) não é válido.',
+    en: 'The issuer alphanumeric CNPJ ({value}) is not valid.',
+  },
+  'accessKey.emitterAmbiguous': {
+    'pt-BR':
+      'As posições do emitente formam um CNPJ válido e também um CPF válido com zeros à esquerda. A chave foi lida como CNPJ.',
+    en: 'The issuer positions form a valid CNPJ and also a valid zero-padded CPF. The key was read as a CNPJ.',
+  },
+  'accessKey.alphanumericBeforeStart': {
+    'pt-BR':
+      'O CNPJ alfanumérico só é aceito nos documentos fiscais a partir de julho de 2026 (NT 2025.001). A SEFAZ rejeita chave com CNPJ alfanumérico emitida antes disso.',
+    en: 'Alphanumeric CNPJ is only accepted in tax documents from July 2026 (NT 2025.001). SEFAZ rejects keys with an alphanumeric CNPJ issued before that.',
+  },
+  'accessKey.otherModel': {
+    'pt-BR':
+      'O modelo {mod} não é NF-e (55) nem NFC-e (65). Só a estrutura geral e o dígito verificador foram conferidos.',
+    en: 'Model {mod} is neither NF-e (55) nor NFC-e (65). Only the general structure and the check digit were checked.',
+  },
+  'accessKey.zeroNumber': {
+    'pt-BR': 'O número da nota não pode ser zero.',
+    en: 'The invoice number cannot be zero.',
+  },
+  'accessKey.badTpEmis': {
+    'pt-BR': 'A forma de emissão {value} não existe. Os valores são 1 a 7 e 9.',
+    en: 'Issue type {value} does not exist. Valid values are 1 to 7 and 9.',
+  },
+  'accessKey.scanDisabled': {
+    'pt-BR': 'A forma de emissão 3 (SCAN) está desativada.',
+    en: 'Issue type 3 (SCAN) has been deactivated.',
+  },
+  'accessKey.offlineOnlyNfce': {
+    'pt-BR': 'A forma de emissão 9 (contingência off-line) é usada na NFC-e, não na NF-e.',
+    en: 'Issue type 9 (offline contingency) is used for NFC-e, not for NF-e.',
+  },
+  'accessKey.weakCnf': {
+    'pt-BR':
+      'O código numérico {value} é proibido por ser uma sequência fraca (Rejeição 897, NT 2019.001).',
+    en: 'Numeric code {value} is not allowed because it is a weak sequence (Rejection 897, NT 2019.001).',
+  },
+  'accessKey.cnfEqualsNumber': {
+    'pt-BR': 'O código numérico não pode ser igual ao número da nota (Rejeição 897, NT 2019.001).',
+    en: 'The numeric code cannot equal the invoice number (Rejection 897, NT 2019.001).',
+  },
+  'accessKey.badDv': {
+    'pt-BR': 'O dígito verificador não confere. Esperado {expected}, informado {found}.',
+    en: 'The check digit does not match. Expected {expected}, got {found}.',
+  },
 } as const satisfies Record<string, Record<Locale, string>>;
 
 export type MessageCode = keyof typeof MESSAGES;

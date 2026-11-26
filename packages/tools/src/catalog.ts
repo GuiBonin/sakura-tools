@@ -233,18 +233,37 @@ export const CATALOG: readonly ToolDefinition[] = [
     },
     keywords: ['cnpj', 'alfanumerico', 'validar', 'gerar', 'empresa', 'brasil'],
   },
+  {
+    ...local,
+    id: 'access-key-validator',
+    slug: 'access-key-validator',
+    status: 'stable',
+    category: 'fiscal',
+    icon: 'KeyRound',
+    name: { 'pt-BR': 'Validador de chave de acesso', en: 'Access Key Validator' },
+    description: {
+      'pt-BR':
+        'Confere a chave de 44 posições da NF-e e da NFC-e, campo a campo, com CNPJ alfanumérico.',
+      en: 'Check the 44-character NF-e and NFC-e access key field by field, including alphanumeric CNPJ.',
+    },
+    keywords: [
+      'chave de acesso',
+      'chave',
+      'nfe',
+      'nf-e',
+      'nfce',
+      'nfc-e',
+      'nota fiscal',
+      'danfe',
+      'access key',
+      'fiscal',
+    ],
+  },
 
   // ---------------------------------------------------------- planejadas
   ...(
     [
       ['nfe-viewer', 'fiscal', 'FileText', 'Visualizador de NF-e e NFC-e', 'NF-e and NFC-e Viewer'],
-      [
-        'access-key-validator',
-        'fiscal',
-        'KeyRound',
-        'Validador de chave de acesso',
-        'Access Key Validator',
-      ],
       ['rejection-codes', 'fiscal', 'BookOpen', 'Consulta de rejeições', 'Rejection Codes'],
       ['yaml-json', 'programming', 'FileCode', 'YAML ↔ JSON', 'YAML ↔ JSON'],
       ['csv-json', 'programming', 'Table', 'CSV ↔ JSON', 'CSV ↔ JSON'],

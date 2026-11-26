@@ -12,5 +12,6 @@ export * from './qrcode';
 export * from './hash';
 export * from './jwt';
 export * from './brazil';
+export * from './accessKey';
 export * from './catalog';
 export * from './messages';

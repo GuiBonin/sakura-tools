@@ -72,7 +72,13 @@ describe('Busca global (Ctrl+K)', () => {
     const input = await screen.findByRole('combobox');
     await user.type(input, 'cnpj');
     const list = screen.getByRole('listbox');
-    expect(within(list).getAllByRole('option')).toHaveLength(1);
+    // O validador de chave de acesso também aparece, porque fala de CNPJ alfanumérico.
+    const options = within(list).getAllByRole('option');
+    expect(options[0]).toHaveTextContent('Validador de CNPJ');
+    expect(options.map((o) => o.textContent)).toEqual([
+      expect.stringContaining('Validador de CNPJ'),
+      expect.stringContaining('Validador de chave de acesso'),
+    ]);
     await user.keyboard('{Enter}');
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Validador de CNPJ' }),

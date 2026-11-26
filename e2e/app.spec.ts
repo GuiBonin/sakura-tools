@@ -17,6 +17,7 @@ const TOOLS = [
   'jwt-decoder',
   'cpf-validator',
   'cnpj-validator',
+  'access-key-validator',
 ];
 
 /** Erros de console e de página, e requisições para fora do próprio app. */
@@ -153,6 +154,29 @@ test.describe('QR Code', () => {
   });
 });
 
+test.describe('chave de acesso', () => {
+  for (const theme of ['dark', 'light'] as const) {
+    test(`chave com erros no tema ${theme}: tabela marcada, sem rolagem e sem violações sérias`, async ({
+      page,
+    }) => {
+      await page.addInitScript((t) => localStorage.setItem('sakura-tools-theme', t), theme);
+      await page.goto('/tools/access-key-validator');
+      // UF 99, cNF fraco e DV errado (chave fictícia).
+      await page
+        .getByLabel('Chave de acesso')
+        .fill('9926 1111 2223 3300 0181 5500 1000 0001 2311 2345 6780');
+      await expect(page.getByRole('status')).toContainText('3 problemas na chave:');
+      await expect(page.locator('tr.st-row--danger')).toHaveCount(3);
+      expect(await hasHorizontalScroll(page)).toBe(false);
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+      const serious = results.violations
+        .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+        .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`);
+      expect(serious).toEqual([]);
+    });
+  }
+});
+
 test.describe('desktop', () => {
   test.skip(({ isMobile }) => isMobile, 'só no desktop');
 
@@ -253,6 +277,7 @@ test.describe('acessibilidade (axe)', () => {
       '/tools/qr-code',
       '/tools/hash-generator',
       '/tools/cnpj-validator',
+      '/tools/access-key-validator',
       '/pricing',
     ]) {
       test(`${path} no tema ${theme} sem violações sérias`, async ({ page }) => {

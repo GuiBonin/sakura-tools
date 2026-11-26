@@ -5,8 +5,8 @@ import { CATALOG } from './catalog';
 describe('Catálogo', () => {
   const registry = new ToolRegistry(CATALOG);
 
-  it('monta o registro sem conflitos e tem as 15 ferramentas do MVP', () => {
-    expect(registry.available()).toHaveLength(15);
+  it('monta o registro sem conflitos e tem as 16 ferramentas disponíveis', () => {
+    expect(registry.available()).toHaveLength(16);
   });
 
   it('toda ferramenta disponível tem nome e descrição nos dois idiomas e palavras-chave', () => {

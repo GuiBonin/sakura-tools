@@ -688,6 +688,14 @@ kbd {
   color: var(--sk-danger-soft-fg);
 }
 
+.st-issues {
+  margin: var(--sk-space-1) 0 0;
+  padding-left: var(--sk-space-5);
+}
+.st-issues li + li {
+  margin-top: var(--sk-space-1);
+}
+
 .st-notice {
   display: flex;
   gap: var(--sk-space-3);
@@ -774,6 +782,14 @@ kbd {
   color: var(--sk-fg-muted);
   font-weight: var(--sk-weight-medium);
   background: var(--sk-surface-2);
+}
+.st-table tbody th {
+  background: transparent;
+}
+.st-table .st-row--danger th,
+.st-table .st-row--danger td {
+  background: var(--sk-danger-soft);
+  color: var(--sk-danger-soft-fg);
 }
 
 .st-pre {

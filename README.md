@@ -27,6 +27,7 @@ Tudo processado no seu navegador. Open source. Powered by [Sakura UI](https://gi
 | Frontend    | Conversor HEX/RGB/HSL/CMYK com contraste WCAG                                                                          |
 | Datas       | Unix Timestamp com fusos horários                                                                                      |
 | Brasil      | Validador e gerador de teste de CPF e CNPJ (inclusive CNPJ alfanumérico)                                               |
+| Fiscal      | Validador de chave de acesso da NF-e e da NFC-e, campo a campo (inclusive CNPJ alfanumérico)                           |
 
 ## Privacidade
 
